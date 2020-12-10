@@ -1,15 +1,6 @@
-## My Project
+## Gateway Load Balancers User Guide
 
-TODO: Fill this README out!
-
-Be sure to:
-
-* Change the title in this README
-* Edit your repository description on GitHub
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+The Markdown version of the User Guide for Gateway Load Balancers. To provide feedback or request changes, you can submit a pull request that contains your proposed changes.
 
 ## License Summary
 
