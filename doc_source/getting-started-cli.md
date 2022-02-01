@@ -13,11 +13,39 @@ In this tutorial, we'll implement an inspection system using a Gateway Load Bala
 
 ## Overview<a name="overview-cli"></a>
 
-The security appliances run in a subnet of the service provider VPC\. The Gateway Load Balancer is in another subnet of the service provider VPC\.
+A Gateway Load Balancer endpoint is a VPC endpoint that provides private connectivity between virtual appliances in the service provider VPC, and application servers in the the service consumer VPC\. The Gateway Load Balancer is deployed in the same VPC as that of the virtual appliances\. These appliances are registered as a target group of the Gateway Load Balancer\.
 
-The application servers run in a subnet of the service consumer VPC\. The network interface for the Gateway Load Balancer endpoint is in another subnet of the service consumer VPC\. All traffic entering the service consumer VPC through the internet gateway is routed to the Gateway Load Balancer endpoint for inspection before it's routed to the destination subnet\. Similarly, all traffic leaving the EC2 instance is routed to the Gateway Load Balancer endpoint for inspection before it's routed to the internet\.
+The application servers run in one subnet \(destination subnet\) in the service consumer VPC, while the Gateway Load Balancer endpoint is in another subnet of the same VPC\. All traffic entering the service consumer VPC through the internet gateway is first routed to the Gateway Load Balancer endpoint for inspection and then routed to the destination subnet\.
 
-![\[Using a Gateway Load Balancer endpoint to access an endpoint service\]](http://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/images/vpc-endpoint-service-gwlbe.png)
+Similarly, all traffic leaving the application servers \(destination subnet\) is routed to the Gateway Load Balancer endpoint for inspection before it is routed back to the internet\. The following network diagram is a visual representation of how a Gateway Load Balancer endpoint is used to access an endpoint service\.
+
+![\[Using a Gateway Load Balancer endpoint to access an endpoint service\]](http://docs.aws.amazon.com/elasticloadbalancing/latest/gateway/images/vpc-endpoint-service-gwlbe-new.png)
+
+The numbered items that follow, highlight and explain elements shown in the preceding image\. 
+
+**Traffic from the internet to the application \(blue arrows\):**
+
+1. Traffic enters the service consumer VPC through the internet gateway\.
+
+1. Traffic is sent to the Gateway Load Balancer endpoint, as a result of ingress routing\.
+
+1. Traffic is sent to the Gateway Load Balancer for inspection through the security appliance\.
+
+1. Traffic is sent back to the Gateway Load Balancer endpoint after inspection\.
+
+1. Traffic is sent to the application servers \(destination subnet\)\.
+
+**Traffic from the application to the internet \(orange arrows\):**
+
+1. Traffic is sent to the Gateway Load Balancer endpoint as a result of the default route configured on the application server subnet\.
+
+1. Traffic is sent to the Gateway Load Balancer for inspection through the security appliance\.
+
+1.  Traffic is sent back to the Gateway Load Balancer endpoint after inspection\. 
+
+1. Traffic is sent to the internet gateway based on the route table configuration\.
+
+1. Traffic is routed back to the internet\.
 
 ### Routing<a name="route-tables"></a>
 

@@ -13,5 +13,5 @@ Your AWS account has the following quotas related to Gateway Load Balancers\.
 + Gateway Load Balancers per VPC: 10
 
 **Target group**
-+ Target groups with GENEVE protocol per Availability Zone: 100
++ Target groups with GENEVE protocol: 100
 + Targets per Availability Zone per target group with GENEVE protocol: 300

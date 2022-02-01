@@ -1,6 +1,6 @@
 # Monitor your Gateway Load Balancers<a name="monitoring"></a>
 
-You can use the following features to monitor your Gateway Load Balancers, to analyze traffic patterns, and to troubleshoot issues\.
+You can use the following features to monitor your Gateway Load Balancers to analyze traffic patterns, and to troubleshoot issues\. However, the Gateway Load Balancer does not generate access logs since it is a transparent layer 3 load balancer that does not terminate flows\. To receive access logs, you must enable access logging on Gateway Load Balancer target appliances such as firewalls, IDS/IPS, and security appliances\. In addition, you can also choose to enable VPC flow logs on Gateway Load Balancers\.
 
 **CloudWatch metrics**  
 You can use Amazon CloudWatch to retrieve statistics about data points for your Gateway Load Balancers and targets as an ordered set of time\-series data, known as *metrics*\. You can use these metrics to verify that your system is performing as expected\. For more information, see [CloudWatch metrics for your Gateway Load Balancer](cloudwatch-metrics.md)\.

@@ -9,6 +9,7 @@ You can add or remove targets from your load balancer as your needs change, with
 **Topics**
 + [Load balancer state](#load-balancer-state)
 + [Load balancer attributes](#load-balancer-attributes)
++ [Availability Zones](#availability-zones)
 + [Deletion protection](#deletion-protection)
 + [Cross\-zone load balancing](#cross-zone-load-balancing)
 + [Create a load balancer](create-load-balancer.md)
@@ -37,6 +38,10 @@ Indicates whether [deletion protection](#deletion-protection) is enabled\. The d
 
 `load_balancing.cross_zone.enabled`  
 Indicates whether [cross\-zone load balancing](#cross-zone-load-balancing) is enabled\. The default is `false`\.
+
+## Availability Zones<a name="availability-zones"></a>
+
+When you create a Gateway Load Balancer, you enable one or more Availability Zones, and specify the subnet that corresponds to each zone\. When you enable multiple Availability Zones, it ensures that the load balancer can continue to route traffic even if an Availability Zone becomes unavailable\. The subnets that you specify must each have at least 8 available IP addresses\. Subnets cannot be added or removed after the load balancer is created\. To add or remove a subnet, you must create a new load balancer\.
 
 ## Deletion protection<a name="deletion-protection"></a>
 
@@ -73,9 +78,7 @@ Use the [modify\-load\-balancer\-attributes](https://docs.aws.amazon.com/cli/lat
 
 ## Cross\-zone load balancing<a name="cross-zone-load-balancing"></a>
 
-By default, cross\-zone load balancing is disabled, so each Gateway Load Balancer node distributes traffic across the registered targets in its Availability Zone only\. If a target becomes unhealthy, the load balancer node continues to send existing flows to the unhealthy target and traffic is nulled\. The load balancer node sends new flows to healthy targets in the same Availability Zone\. If no healthy targets are found, all traffic is nulled\.
-
-After you enable cross\-zone load balancing, if the load balancer node does not find a healthy target in the same Availability Zone, it can send new flows to healthy targets in a different Availability Zone\. If a target becomes unhealthy, the load balancer continues to send existing flows to the unhealthy target until the client resets them\.
+By default, each load balancer node distributes traffic across the registered targets in its Availability Zone only\. If you enable cross\-zone load balancing, each Gateway Load Balancer node distributes traffic across the registered targets in all enabled Availability Zones\. For more information, see [Cross\-zone load balancing](https://docs.aws.amazon.com/elasticloadbalancing/latest/userguide/how-elastic-load-balancing-works.html#cross-zone-load-balancing) in the *Elastic Load Balancing User Guide*\.
 
 **To enable cross\-zone load balancing using the console**
 

@@ -61,9 +61,17 @@ The amount of time for Elastic Load Balancing to wait before changing the state 
 
 ## Deregistration delay<a name="deregistration-delay"></a>
 
-When you deregister an instance, the Gateway Load Balancer stops creating new connections to the instance\. The Gateway Load Balancer uses connection draining to ensure that in\-flight traffic completes on the existing connections\. If the deregistered instance stays healthy and an existing connection is not idle, the Gateway Load Balancer can continue to send traffic to the instance\. To ensure that existing connections are closed, you can verify that the instance is unhealthy before you deregister it, or you can periodically close client connections\.
+When you deregister a target, the Gateway Load Balancer manages flows to that target in the following manner: 
 
-The initial state of a deregistering target is `draining`\. By default, the Gateway Load Balancer changes the state of a deregistering target to `unused` after 300 seconds\. To change the amount of time that the Gateway Load Balancer waits before changing the state of a deregistering target to `unused`, update the deregistration delay value\. We recommend that you specify a value of at least 120 seconds to ensure that requests are completed\.
+**New flows**:  
+The Gateway Load Balancer stops sending new flows to a deregistered target\.
+
+**Existing flows**:  
+The Gateway Load Balancer handles existing flows based on protocol\.  
++  **TCP protocols**: Existing flows for TCP protocols are closed if idle for more than 350 seconds\.
++  **Non\-TCP protocols**: Existing flows for all non\-TCP protocols are closed if idle for more than 120 seconds\. 
+
+To help drain existing flows, we recommend that you stop sending all traffic to the load balancer\. This allows the idle timeout created by deregistration to take effect\. A deregistered target shows that it is `draining` until the timeout expires\. After the deregistration delay timeout expires, the target transitions to an `unused` state\.
 
 ------
 #### [ New console ]

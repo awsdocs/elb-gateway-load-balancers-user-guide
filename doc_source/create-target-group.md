@@ -25,13 +25,13 @@ You can add or remove targets from your target group at any time\. For more info
 
 1. For **VPC**, select a virtual private cloud \(VPC\)\.
 
-1. \(Optional\) In the **Health checks** section, modify the default settings as needed\.
+1. In the **Health checks** section \(optional\), modify the default settings as needed\.
 
-1. \(Optional\) Expand the **Tags** section and add one or more tags\. To add a tag, choose **Add tag** and enter the tag key and tag value\.
+1. Expand the **Tags** section \(optional\) and add one or more tags\. To add a tag, choose **Add tag** and enter the tag key and tag value\.
 
 1. Choose **Next**\.
 
-1. \(Optional\) Add one or more targets as follows:
+1. Add one or more targets as follows:
    + If the target type is **Instances**, select one or more instances, enter one or more ports, and then choose **Include as pending below**\.
    + If the target type is **IP addresses**, select the network, enter the IP address and ports, and then choose **Include as pending below**\.
 

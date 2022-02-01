@@ -9,85 +9,86 @@ To create a Gateway Load Balancer using the AWS CLI, see [Getting started using 
 To create a Gateway Load Balancer using the AWS Management Console, complete the following tasks\.
 
 **Topics**
-+ [Step 1: Configure a load balancer and a listener](#configure-load-balancer)
-+ [Step 2: Configure a target group](#configure-target-group)
-+ [Step 3: Register targets with the target group](#select-targets)
-+ [Step 4: Create the load balancer](#create-load-balancer)
++ [Step 1: Configure your target group and register targets](#configure-target-group)
++ [Step 2: Configure the load balancer and listener](#configure-load-balancer)
++ [Important next steps](#important-next-steps)
 
-## Step 1: Configure a load balancer and a listener<a name="configure-load-balancer"></a>
+## Step 1: Configure your target group and register targets<a name="configure-target-group"></a>
 
-First, provide some basic configuration information for your Gateway Load Balancer, such as a name, and a network\. The listener for the load balancer listens for all IP packets across all ports\.
-
-**To configure your load balancer and listener**
-
-1. Open the Amazon EC2 console at [https://console\.aws\.amazon\.com/ec2/](https://console.aws.amazon.com/ec2/)\.
-
-1. On the navigation pane, under **LOAD BALANCING**, choose **Load Balancers**\.
-
-1. Choose **Create Load Balancer**\.
-
-1. For **Gateway Load Balancer**, choose **Create**\.
-
-1. For **Name**, enter a name for your Gateway Load Balancer\. For example, **my\-load\-balancer**\.
-
-1. For **Availability Zones**, select the VPC that you used for your appliance instances\. For each Availability Zone that you used to launch your instances, select an Availability Zone and then select the subnet for that Availability Zone\.
-
-1. \(Optional\) Expand **Tags** and add tags\.
-
-1. Choose **Next: Configure Routing**\.
-
-## Step 2: Configure a target group<a name="configure-target-group"></a>
-
-You register targets, such as EC2 instances, with a target group\. The target group that you configure in this step is used as the target group in the listener rule, which forwards requests to the target group\. For more information, see [Target groups](target-groups.md)\.
+You can register targets, such as EC2 instances, with a target group\. The target group that you configure in this step is used as the target group in the lP listener routing section, when you configure your load balancer\. For more information, see [Target groups](target-groups.md)\.
 
 **To configure your target group**
 
-1. For **Target group**, keep the default, **New target group**\.
+1. Open the Amazon EC2 console at [https://console\.aws\.amazon\.com/ec2/](https://console.aws.amazon.com/ec2/)\.
 
-1. For **Name**, enter a name for the target group\.
+1. In the navigation pane, under **Load Balancing**, choose **Target Groups**\.
 
-1. For **Target type**, select `instance` to specify targets by instance ID or `ip` to specify targets by IP address\.
+1. Choose **Create target group**\.
 
-1. **Protocol** must be `GENEVE`, and **Port** must be `6081`\.
+1. **Basic configuration**
 
-1. \(Optional\) For **Health checks**, modify the health check settings as needed\.
+   1. For **Choose a target type**, select **Instances** to specify targets by instance ID, or select **IP addresses** to specify targets by IP address\.
 
-1. Choose **Next: Register Targets**\.
+   1. For **Target group name**, enter a name for the target group\.
 
-## Step 3: Register targets with the target group<a name="select-targets"></a>
+   1. Verify that **Protocol** is set to `GENEVE`, and the **Port** is set to `6081`\. No other values for Protocol and port are supported\.
 
-You can register EC2 instances as targets in a target group\. The target type of the target group determines how you register targets with that target group\.
+   1. For **VPC**, select a virtual private cloud \(VPC\) with the instances that you want to include in your target group\.
 
-**To register targets by instance ID**
+1. In the **Health checks** section \(optional\), modify the default settings as needed\. For **Advanced health check settings**, choose the health check port, count, timeout, and interval, and then specify success codes\. If health checks consecutively exceed the **Unhealthy threshold** count, the load balancer takes the target out of service\. If health checks consecutively exceed the **Healthy threshold** count, the load balancer puts the target back in service\. For more information, see [Health checks for your target groups](health-checks.md)\.
 
-1. For **Instances**, select one or more instances and choose **Add to registered**\.
+1. For **Tags** \(optional\), add one or more tags as follows:
 
-1. When you have finished adding instances to the list, choose **Next: Review**\.
+   1. Expand the **Tags** section\.
 
-**To register targets by IP address**
+   1. Choose **Add tag**\.
 
-1. For each IP address to register, do the following:
+   1. Enter the tag **Key** and tag **Value**\. Allowed characters are letters, spaces, numbers \(in UTF\-8\), and the following special characters: \+ \- = \. \_ : / @\. Do not use leading or trailing spaces\. Tag values are case\-sensitive\.
 
-   1. For **Network**, if the IP address is from a subnet of the target group VPC, select the VPC\. Otherwise, select **Other private IP address**\.
+1. Choose Next
 
-   1. For **IP**, enter the address\.
+1. In the **Register targets** page, add one or more targets as follows:
+   + If the target type is **Instances**, select one or more instances, enter one or more ports, and then choose **Include as pending below**\.
+   + If the target type is **IP addresses**, select the network, enter the IP address and ports, and then choose **Include as pending below**\.
 
-   1. Choose **Add to list**\.
+1. Choose **Create target group**\.
 
-1. When you have finished adding IP addresses to the list, choose **Next: Review**\.
+## Step 2: Configure the load balancer and listener<a name="configure-load-balancer"></a>
 
-## Step 4: Create the load balancer<a name="create-load-balancer"></a>
+Use the following procedure to create your Gateway Load Balancer\. Provide basic configuration information for your load balancer, such as a name and IP address type \(currently only IPv4 is supported\)\. Then provide information about your network, and the IP listener that routes traffic to your target groups\. Only target groups with GENEVE are available for use with the Gateway Load Balancer\.
 
-After creating your load balancer, you can verify that your EC2 instances have passed the initial health check and then test that the load balancer is sending traffic to your EC2 instances\. When you are finished with your load balancer, you can delete it\. For more information, see [Delete a load balancer](delete-load-balancer.md)\.
+**To create a Gateway Load Balancer**
 
-**To create the load balancer**
+1. Open the Amazon EC2 console at [https://console\.aws\.amazon\.com/ec2/](https://console.aws.amazon.com/ec2/)\.
 
-1. On the **Review** page, choose **Create**\.
+1. In the navigation pane, under **Load Balancing**, choose **Load Balancers**\.
 
-1. After the load balancer is created, choose **Close**\.
+1. Choose **Create Load Balancer**\.
 
-1. On the navigation pane, under **LOAD BALANCING**, choose **Target Groups**\.
+1. Under **Gateway Load Balancer**, choose **Create**\.
 
-1. Select the newly created target group\.
+1. **Basic configuration**
 
-1. Choose **Targets** and verify that your instances are ready\. If the status of an instance is `initial`, it's probably because the instance is still in the process of being registered, or it has not passed the minimum number of health checks to be considered healthy\. After the status of at least one instance is healthy, you can test your load balancer\.
+   1. For **Load balancer name**, enter a name for your load balancer\. For example, **my\-glb**\. The name of your Gateway Load Balancer must be unique within your set of load balancers for the Region\. It can have a maximum of 32 characters, can contain only alphanumeric characters and hyphens, and must not begin or end with a hyphen\.
+
+   1. For **IP address type**, you must choose **IPv4**, because your clients can only use IPv4 addresses to communicate with the load balancer\.
+
+1. **Network mapping**
+
+   1. For **VPC**, select the service provider VPC\. Only VPCs with an internet gateway are available for selection\.
+
+   1. For **Mappings**, select all of the Availability Zones in which you launched security appliance instances, and the corresponding public subnets\.
+
+1. **IP listener routing**
+
+1. For **Default action**, select a target group to forward traffic to\. If you don't have a default target group, create a target group first\. Only target groups with GENEVE protocol are available for use with the Gateway Load Balancer\.
+
+1. **Tag and create**
+
+   1. Add an optional tag to categorize your load balancer\. Tag keys must be unique for each load balancer\. Allowed characters are letters, spaces, numbers \(in UTF\-8\), and the following special characters: \+ \- = \. \_ : / @\. Do not use leading or trailing spaces\. Tag values are case\-sensitive\. For more information, see [Update tags](tag-load-balancer.md)\.
+
+   1. Review your configuration, and choose Create load balancer\. A few default attributes are applied to your load balancer during creation\. You can view and edit them after creating the load balancer\. 
+
+## Important next steps<a name="important-next-steps"></a>
+
+After creating your load balancer, verify that your EC2 instances have passed the initial health check\. To test your load balancer, you must create a Gateway Load Balancer endpoint and update your route table to make the Gateway Load Balancer endpoint the next hop\. These configurations are set within the Amazon VPC console\. For more information, see [Step 2: Create a Gateway Load Balancer endpoint](getting-started.md#create-endpoint) and [Step 3: Configure routing](getting-started.md#configure-routing) in the [Getting started with Gateway Load Balancers](getting-started.md) section\.
