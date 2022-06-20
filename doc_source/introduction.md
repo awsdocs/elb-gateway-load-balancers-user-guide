@@ -2,13 +2,13 @@
 
 Gateway Load Balancers enable you to deploy, scale, and manage virtual appliances, such as firewalls, intrusion detection and prevention systems, and deep packet inspection systems\. It combines a transparent network gateway \(that is, a single entry and exit point for all traffic\) and distributes traffic while scaling your virtual appliances with the demand\. 
 
-A Gateway Load Balancer operates at the third layer of the Open Systems Interconnection \(OSI\) model, the network layer\. It listens for all IP packets across all ports and forwards traffic to the target group that's specified in the listener rule\. It maintains stickiness of flows to a specific target appliance using 5\-tuple \(for TCP/UDP flows\) or 3\-tuple \(for non\-TCP/UDP flows\)\. The Gateway Load Balancer and its registered virtual appliance instances exchange application traffic using the [GENEVE](https://datatracker.ietf.org/doc/html/rfc8926) protocol on port 6081\. It supports a maximum transmission unit \(MTU\) size of 8500 bytes\.
+A Gateway Load Balancer operates at the third layer of the Open Systems Interconnection \(OSI\) model, the network layer\. It listens for all IP packets across all ports and forwards traffic to the target group that's specified in the listener rule\. It maintains stickiness of flows to a specific target appliance using 5\-tuple \(for TCP/UDP flows\) or 3\-tuple \(for non\-TCP/UDP flows\)\. The Gateway Load Balancer and its registered virtual appliance instances exchange application traffic using the [GENEVE](https://datatracker.ietf.org/doc/html/rfc8926) protocol on port 6081\.
 
 Gateway Load Balancers use Gateway Load Balancer endpoints to securely exchange traffic across VPC boundaries\. A Gateway Load Balancer endpoint is a VPC endpoint that provides private connectivity between virtual appliances in the service provider VPC and application servers in the service consumer VPC\. You deploy the Gateway Load Balancer in the same VPC as the virtual appliances\. You register the virtual appliances with a target group for the Gateway Load Balancer\.
 
 Traffic to and from a Gateway Load Balancer endpoint is configured using route tables\. Traffic flows from the service consumer VPC over the Gateway Load Balancer endpoint to the Gateway Load Balancer in the service provider VPC, and then returns to the service consumer VPC\. You must create the Gateway Load Balancer endpoint and the application servers in different subnets\. This enables you to configure the Gateway Load Balancer endpoint as the next hop in the route table for the application subnet\.
 
-For more information, see [Gateway Load Balancer endpoints \(AWS PrivateLink\)](https://docs.aws.amazon.com/vpc/latest/userguide/vpce-gateway-load-balancer.html) in the *Amazon VPC User Guide*\.
+For more information, see [Access virtual appliances through AWS PrivateLink](https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html) in the *AWS PrivateLink Guide*\.
 
 ## Appliance vendors<a name="appliance-vendors"></a>
 

@@ -8,7 +8,7 @@ When you deregister a target, Elastic Load Balancing waits until in\-flight requ
 
 ## Target security groups<a name="target-security-groups"></a>
 
-When you register EC2 instances as targets, you must ensure that the security groups for these instances allow traffic on port 6081\.
+When you register EC2 instances as targets, you must ensure that the security groups for these instances allow inbound and outbound traffic on port 6081\.
 
 Gateway Load Balancers do not have associated security groups\. Therefore, the security groups for your targets must use IP addresses to allow traffic from the load balancer\.
 

@@ -135,7 +135,7 @@ Use the following procedure to create your load balancer, listener, and target g
 
 ## Step 2: Create a Gateway Load Balancer endpoint<a name="create-endpoint-aws-cli"></a>
 
-Use the following procedure to create a Gateway Load Balancer endpoint\. Gateway Load Balancer endpoints are zonal\. We recommend that you create one Gateway Load Balancer endpoint per zone\. For more information, see [Gateway Load Balancer endpoints \(AWS PrivateLink\)](https://docs.aws.amazon.com/vpc/latest/userguide/vpce-gateway-load-balancer.html)\.
+Use the following procedure to create a Gateway Load Balancer endpoint\. Gateway Load Balancer endpoints are zonal\. We recommend that you create one Gateway Load Balancer endpoint per zone\. For more information, see [Access virtual appliances through AWS PrivateLink](https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html)\.
 
 **To create a Gateway Load Balancer endpoint**
 

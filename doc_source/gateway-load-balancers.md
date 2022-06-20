@@ -10,6 +10,7 @@ You can add or remove targets from your load balancer as your needs change, with
 + [Load balancer state](#load-balancer-state)
 + [Load balancer attributes](#load-balancer-attributes)
 + [Availability Zones](#availability-zones)
++ [Network maximum transmission unit \(MTU\)](#mtu)
 + [Deletion protection](#deletion-protection)
 + [Cross\-zone load balancing](#cross-zone-load-balancing)
 + [Create a load balancer](create-load-balancer.md)
@@ -42,6 +43,12 @@ Indicates whether [cross\-zone load balancing](#cross-zone-load-balancing) is en
 ## Availability Zones<a name="availability-zones"></a>
 
 When you create a Gateway Load Balancer, you enable one or more Availability Zones, and specify the subnet that corresponds to each zone\. When you enable multiple Availability Zones, it ensures that the load balancer can continue to route traffic even if an Availability Zone becomes unavailable\. The subnets that you specify must each have at least 8 available IP addresses\. Subnets cannot be added or removed after the load balancer is created\. To add or remove a subnet, you must create a new load balancer\.
+
+## Network maximum transmission unit \(MTU\)<a name="mtu"></a>
+
+The maximum transmission unit \(MTU\) of a network connection is the size, in bytes, of the largest packet that can be passed over the connection\. The load balancer nodes for a Gateway Load Balancer support an MTU of 8500 bytes\. You must ensure that the MTU settings for your appliances support packets that are 8500 bytes in size\.
+
+Gateway Load Balancers encapsulate IP traffic with a GENEVE header and forward it to appliances over UDP port 6081\. The GENEVE encapsulation adds 64 bytes to the original head and doesn't count toward the overall MTU limit\.
 
 ## Deletion protection<a name="deletion-protection"></a>
 
