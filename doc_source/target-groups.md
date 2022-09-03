@@ -10,6 +10,7 @@ You define health check settings for your Gateway Load Balancer on a per target 
 + [Registered targets](#registered-targets)
 + [Target group attributes](#target-group-attributes)
 + [Deregistration delay](#deregistration-delay)
++ [Flow stickiness](#flow-stickiness)
 + [Create a target group](create-target-group.md)
 + [Configure health checks](health-checks.md)
 + [Register targets](target-group-register-targets.md)
@@ -59,6 +60,14 @@ The following are the target group attributes:
 `deregistration_delay.timeout_seconds`  
 The amount of time for Elastic Load Balancing to wait before changing the state of a deregistering target from `draining` to `unused`\. The range is 0\-3600 seconds\. The default value is 300 seconds\.
 
+`stickiness.enabled`  
+Indicates whether configurable flow stickiness is enabled for the target group\. The possible values are `true` or `false`\. The default is false\. When the attribute is set to `false`, 5\_tuple is used\. 
+
+`stickiness.type`  
+Indicates the type of the flow stickiness\. The possible values for target groups associated to Gateway Load Balancers are:   
++ `source_ip_dest_ip`
++ `source_ip_dest_ip_proto`
+
 ## Deregistration delay<a name="deregistration-delay"></a>
 
 When you deregister a target, the Gateway Load Balancer manages flows to that target in the following manner: 
@@ -73,14 +82,11 @@ The Gateway Load Balancer handles existing flows based on protocol\.
 
 To help drain existing flows, we recommend that you stop sending all traffic to the load balancer\. This allows the idle timeout created by deregistration to take effect\. A deregistered target shows that it is `draining` until the timeout expires\. After the deregistration delay timeout expires, the target transitions to an `unused` state\.
 
-------
-#### [ New console ]
-
 **To update the deregistration delay value using the new console**
 
 1. Open the Amazon EC2 console at [https://console\.aws\.amazon\.com/ec2/](https://console.aws.amazon.com/ec2/)\.
 
-1. On the navigation pane, under **LOAD BALANCING**, choose **Target Groups**\.
+1. On the navigation pane, under **Load Balancing**, choose **Target Groups**\.
 
 1. Choose the name of the target group to open its details page\.
 
@@ -90,22 +96,31 @@ To help drain existing flows, we recommend that you stop sending all traffic to 
 
 1. Choose **Save changes**\.
 
-------
-#### [ Old console ]
+**To update the deregistration delay value using the AWS CLI**  
+Use the [modify\-target\-group\-attributes](https://docs.aws.amazon.com/cli/latest/reference/elbv2/modify-target-group-attributes.html) command\.
 
-**To update the deregistration delay value using the old console**
+## Flow stickiness<a name="flow-stickiness"></a>
+
+By default, the Gateway Load Balancer maintains stickiness of flows to a specific target appliance using 5\-tuple \(for TCP/UDP flows\)\. 5\-tuple includes source IP, source port, destination IP, destination port, and transport protocol\. You can use the stickiness type attribute to modify the default \(5\-tuple\) and choose either 3\-tuple \(source IP, destination IP, and transport protocol\) or 2\-tuple \(source IP and destination IP\)\.
+
+**Flow stickiness considerations**:
++ Flow stickiness is configured and applied at the target group level, and it applies to all traffic that goes to the target group\. 
++ Flow stickiness won't work if the Gateway Load Balancer is integrated with Amazon VPC Transit Gateways, when appliance mode is enabled\.
++ Flow stickiness can lead to uneven distribution of connections and flows, which may impact the availability of the target\. It is recommended that you terminate or drain all existing flows before modifying the stickiness type of the target group\.
+
+**To update flow stickiness using the console**
 
 1. Open the Amazon EC2 console at [https://console\.aws\.amazon\.com/ec2/](https://console.aws.amazon.com/ec2/)\.
 
-1. On the navigation pane, under **LOAD BALANCING**, choose **Target Groups**\.
+1. On the navigation pane, under **Load Balancing**, choose **Target Groups**\.
 
-1. Select the target group\.
+1. Choose the name of the target group to open its details page\.
 
-1. Choose **Description**, **Edit attributes**\.
+1. On the **Group details** page, in the **Attributes** section, choose **Edit**\.
 
-1. Change the value of **Deregistration delay** as needed, and then choose **Save**\.
+1. On the **Edit attributes** page, change the value of **Flow stickiness** as needed\.
 
-------
+1. Choose **Save changes**\.
 
-**To update the deregistration delay value using the AWS CLI**  
-Use the [modify\-target\-group\-attributes](https://docs.aws.amazon.com/cli/latest/reference/elbv2/modify-target-group-attributes.html) command\.
+**To enable or modify flow stickiness using the AWS CLI**  
+Use the [modify\-target\-group\-attributes](https://docs.aws.amazon.com/cli/latest/reference/elbv2/modify-target-group-attributes.html) command with the `stickiness.enabled` and `stickiness.type` target group attributes\.

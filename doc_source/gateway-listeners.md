@@ -2,7 +2,7 @@
 
 When you create your Gateway Load Balancer, you add a *listener*\. A listener is a process that checks for connection requests\.
 
-Listeners for Gateway Load Balancers listen for all IP packets across all ports\. You cannot specify a protocol or port when you create a listener for a Gateway Load Balancer\. You cannot delete the listener for a Gateway Load Balancer\.
+Listeners for Gateway Load Balancers listen for all IP packets across all ports\. You cannot specify a protocol or port when you create a listener for a Gateway Load Balancer\.
 
 When you create a listener, you specify a rule for routing requests\. This rule forwards requests to the specified target group\. You can update the listener rule to forward requests to a different target group\.
 

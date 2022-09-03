@@ -46,9 +46,9 @@ When you create a Gateway Load Balancer, you enable one or more Availability Zon
 
 ## Network maximum transmission unit \(MTU\)<a name="mtu"></a>
 
-The maximum transmission unit \(MTU\) of a network connection is the size, in bytes, of the largest packet that can be passed over the connection\. The load balancer nodes for a Gateway Load Balancer support an MTU of 8500 bytes\. You must ensure that the MTU settings for your appliances support packets that are 8500 bytes in size\.
+The maximum transmission unit \(MTU\) of a network connection is the size, in bytes, of the largest packet that can be passed over the connection\. The load balancer nodes for a Gateway Load Balancer support an MTU of 8,500 bytes\. You must ensure that the MTU settings for your appliances support packets that are 8,500 bytes in size\.
 
-Gateway Load Balancers encapsulate IP traffic with a GENEVE header and forward it to appliances over UDP port 6081\. The GENEVE encapsulation adds 64 bytes to the original head and doesn't count toward the overall MTU limit\.
+Gateway Load Balancers encapsulate IP traffic with a GENEVE header and forward it to appliances over UDP port 6081\. The GENEVE encapsulation adds 64 bytes to the original header and doesn't count toward the overall MTU limit\. Therefore, to support packet sizes that are up to 8,500 bytes in size, without fragmentation, ensure that the MTU settings are between 8,564 and 9,001 bytes\.
 
 ## Deletion protection<a name="deletion-protection"></a>
 
