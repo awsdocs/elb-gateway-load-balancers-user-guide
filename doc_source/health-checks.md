@@ -59,7 +59,9 @@ If the status of a target is any value other than `Healthy`, the API returns a r
 
 **New flows**: New flows are sent to a healthy target\. When a load balancing decision for a flow has been made, the Gateway Load Balancer will send the flow to the same target even if that target becomes unhealthy, or other targets become healthy\.
 
-When all targets are unhealthy, the Gateway Load Balancer picks a target at random and forwards traffic to it for the life of the flow, until it is either reset or has timed out\. Because traffic is being forwarded to an unhealthy target, traffic is dropped until that target becomes healthy again\. 
+When all targets are unhealthy, the Gateway Load Balancer picks a target at random and forwards traffic to it for the life of the flow, until it is either reset or has timed out\. Because traffic is being forwarded to an unhealthy target, traffic is dropped until that target becomes healthy again\.
+
+**TLS 1\.3**: If a target group is configured with HTTPS health checks, its registered targets fail health checks if they support only TLS 1\.3\. These targets must support an earlier version of TLS, such as TLS 1\.2\.
 
 **Cross\-zone load balancing**: By default, load balancing across Availability Zones is disabled\. If load balancing across zones is enabled, each Gateway Load Balancer is able to see all targets in all Availability Zones, and they are all treated the same, regardless of their zone\. 
 

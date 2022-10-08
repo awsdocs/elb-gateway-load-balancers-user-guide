@@ -8,8 +8,9 @@ In this tutorial, we'll implement an inspection system using a Gateway Load Bala
 + [Overview](#overview)
 + [Prerequisites](#prerequisites)
 + [Step 1: Register targets and create a Gateway Load Balancer](#create-register)
-+ [Step 2: Create a Gateway Load Balancer endpoint](#create-endpoint)
-+ [Step 3: Configure routing](#configure-routing)
++ [Step 2: Create a Gateway Load Balancer endpoint service](#create-endpoint-service)
++ [Step 3: Create a Gateway Load Balancer endpoint](#create-endpoint)
++ [Step 4: Configure routing](#configure-routing)
 
 ## Overview<a name="overview"></a>
 
@@ -89,17 +90,19 @@ Use the following procedure to create your target group, register your security 
 
 1. On the navigation pane, under **Load Balancing**, choose **Target Groups**\.
 
+1. Choose **Create target group**\.
+
 1. For **Choose a target type**, select **Instances** to specify targets by instance ID, or **IP addresses** to specify targets by IP address\.
 
 1. For **Target group name**, enter a name for your target group\. For example, **my\-targets**\.
 
-1. **Protocol** must be `GENEVE`, and **Port** must be `6081`\. No other values for Protocol and port are supported\.
+1. **Protocol** must be `GENEVE`, and **Port** must be `6081`\. No other protocols or ports are supported\.
 
-1. For **VPC**, select a virtual private cloud \(VPC\) with the instances that you want to include in the target group\.
+1. For **VPC**, select a virtual private cloud \(VPC\) with the instances to include in the target group\.
 
-1. For **Health checks** \(optional\), modify the health check settings as needed\.
+1. \(Optional\) For **Health checks**, modify the health check settings as needed\.
 
-1. Expand **Tags** and add tags \(optional\)\.
+1. \(Optional\) Expand **Tags** and add tags\.
 
 1. Choose **Next**\.
 
@@ -123,55 +126,75 @@ Use the following procedure to create your target group, register your security 
 
 1. For **IP address type**, you must choose **IPv4**, because your clients can only use IPv4 addresses to communicate with the load balancer\.
 
-1. For **VPC**, select the service provider VPC\. Only VPCs with an internet gateway are available for selection\.
+1. For **VPC**, select the service provider VPC\.
 
 1. For **Mappings**, select all of the Availability Zones in which you launched security appliance instances, and the corresponding public subnets\.
 
-1. For **Default action**, select a target group to forward traffic to\. If you don't have a default target group, create a target group first\. Only target groups with GENEVE protocol are available for use with the Gateway Load Balancer\.
+1. For **Default action**, select a target group to forward traffic to\. If you don't have a target group, create one first\. The target group must use the GENEVE protocol\.
 
-1. Expand **Tags** and add tags \(optional\)\.
+1. \(Optional\) Expand **Tags** and add tags\.
 
-1. Review your configuration, and choose **Create load balancer**\.
+1. Review your configuration, and then choose **Create load balancer**\.
 
-## Step 2: Create a Gateway Load Balancer endpoint<a name="create-endpoint"></a>
+## Step 2: Create a Gateway Load Balancer endpoint service<a name="create-endpoint-service"></a>
 
-Use the following procedure to create a Gateway Load Balancer endpoint\. Gateway Load Balancer endpoints are zonal\. We recommend that you create one Gateway Load Balancer endpoint per zone\. For more information, see [Access virtual appliances through AWS PrivateLink](https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html)\.
+Use the following procedure to create an endpoint service using a Gateway Load Balancer\.
+
+**To create a Gateway Load Balancer endpoint service**
+
+1. Open the Amazon VPC console at [https://console\.aws\.amazon\.com/vpc/](https://console.aws.amazon.com/vpc/)\.
+
+1. In the navigation pane, choose **Endpoint services**\.
+
+1. Choose **Create endpoint service** and do the following:
+
+   1. For **Load balancer type**, choose **Gateway**\.
+
+   1. For **Available load balancers**, select your Gateway Load Balancer\.
+
+   1. For **Require acceptance for endpoint**, select **Acceptance required** to accept connection requests to your service manually\. Otherwise, they are automatically accepted\.
+
+   1. \(Optional\) To add a tag, choose **Add new tag** and enter the tag key and tag value\.
+
+   1. Choose **Create**\. Note the service name; you'll need it when you create the endpoint\.
+
+1. Select the new endpoint service and choose **Actions**, **Allow principals**\. Enter the ARNs of the service consumers that are allowed to create an endpoint to your service\. A service consumer can be an IAM user, IAM role, or AWS account\. Choose **Allow principals**\.
+
+## Step 3: Create a Gateway Load Balancer endpoint<a name="create-endpoint"></a>
+
+Use the following procedure to create a Gateway Load Balancer endpoint\. Gateway Load Balancer endpoints are zonal\. We recommend that you create one Gateway Load Balancer endpoint per zone\. For more information, see [Access virtual appliances through AWS PrivateLink](https://docs.aws.amazon.com/vpc/latest/privatelink/vpce-gateway-load-balancer.html) in the *AWS PrivateLink Guide*\.
 
 **To create a Gateway Load Balancer endpoint**
 
 1. Open the Amazon VPC console at [https://console\.aws\.amazon\.com/vpc/](https://console.aws.amazon.com/vpc/)\.
 
-1. In the navigation pane, choose **Endpoint Services**\.
-
-1. Choose **Create Endpoint Service** and do the following:
-
-   1. For **Associate Load Balancers**, select your Gateway Load Balancer\.
-
-   1. For **Require acceptance for endpoint**, select **Acceptance required** to accept connection requests to your service manually\. Otherwise, endpoint connections are automatically accepted\.
-
-   1. To add a tag \(optional\), choose **Add tag** and then specify the key and value for the tag\.
-
-   1. Choose **Create service**\. Choose the service ID\. Save the service name from the **Details** tab; you'll need it when you create the endpoint\.
-
-   1. Choose **Actions**, **Add principals to whitelist**\. Enter the ARNs of the service consumers that are allowed to create an endpoint to your service\. A service consumer can be an IAM user, IAM role, or AWS account\.
-
 1. In the navigation pane, choose **Endpoints**\.
 
-1. Choose **Create Endpoint** and do the following:
+1. Choose **Create endpoint** and do the following:
 
-   1. For **Service category**, choose **Find service by name**\.
+   1. For **Service category**, choose **Other endpoint services**\.
 
-   1. For **Service name**, enter the service name that you saved earlier, and then choose **Verify**\. If the name is found, proceed to the next step\. Otherwise, be sure that you used the correct service name\.
+   1. For **Service name**, enter the service name that you noted earlier, and then choose **Verify service**\.
 
    1. For **VPC**, select the service consumer VPC\.
 
    1. For **Subnets**, select a subnet for the Gateway Load Balancer endpoint\.
 
-   1. \(Optional\) To add a tag, choose **Add tag** and specify the key and value for the tag\.
+   1. \(Optional\) To add a tag, choose **Add new tag** and enter the tag key and tag value\.
 
    1. Choose **Create endpoint**\. The initial status is `pending acceptance`\.
 
-## Step 3: Configure routing<a name="configure-routing"></a>
+To accept the endpoint connection request, use the following procedure\.
+
+1. In the navigation pane, choose **Endpoint services**\.
+
+1. Select the endpoint service\.
+
+1. From the **Endpoint connections** tab, select the endpoint connection\.
+
+1. To accept the connection request, choose **Actions**, **Accept endpoint connection request**\. When prompted for confirmation, enter **accept** and then choose **Accept**\.
+
+## Step 4: Configure routing<a name="configure-routing"></a>
 
 Configure the route tables for the service consumer VPC as follows\. This allows the security appliances to perform security inspection on inbound traffic that's destined for the application servers\.
 
@@ -179,7 +202,7 @@ Configure the route tables for the service consumer VPC as follows\. This allows
 
 1. Open the Amazon VPC console at [https://console\.aws\.amazon\.com/vpc/](https://console.aws.amazon.com/vpc/)\.
 
-1. In the navigation pane, choose **Route Tables**\.
+1. In the navigation pane, choose **Route tables**\.
 
 1. Select the route table for the internet gateway and do the following:
 
@@ -187,7 +210,7 @@ Configure the route tables for the service consumer VPC as follows\. This allows
 
    1. Choose **Add route**\. For **Destination**, enter the CIDR block of the subnet for the application servers \(for example, 10\.0\.1\.0/24\)\. For **Target**, select the VPC endpoint\.
 
-   1. Choose **Save routes**\.
+   1. Choose **Save changes**\.
 
 1. Select the route table for the subnet with the application servers and do the following:
 
@@ -195,7 +218,7 @@ Configure the route tables for the service consumer VPC as follows\. This allows
 
    1. Choose **Add route**\. For **Destination**, enter **0\.0\.0\.0/0**\. For **Target**, select the VPC endpoint\.
 
-   1. Choose **Save routes**\.
+   1. Choose **Save changes**\.
 
 1. Select the route table for the subnet with the Gateway Load Balancer endpoint, and do the following:
 
@@ -203,4 +226,4 @@ Configure the route tables for the service consumer VPC as follows\. This allows
 
    1. Choose **Add route**\. For **Destination**, enter **0\.0\.0\.0/0**\. For **Target**, select the internet gateway\.
 
-   1. Choose **Save routes**\.
+   1. Choose **Save changes**\.

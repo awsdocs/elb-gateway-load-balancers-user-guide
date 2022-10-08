@@ -13,6 +13,7 @@ You can add or remove targets from your load balancer as your needs change, with
 + [Network maximum transmission unit \(MTU\)](#mtu)
 + [Deletion protection](#deletion-protection)
 + [Cross\-zone load balancing](#cross-zone-load-balancing)
++ [Asymmetric flows](#asymmetric-flows)
 + [Create a load balancer](create-load-balancer.md)
 + [Update tags](tag-load-balancer.md)
 + [Delete a load balancer](delete-load-balancer.md)
@@ -46,9 +47,11 @@ When you create a Gateway Load Balancer, you enable one or more Availability Zon
 
 ## Network maximum transmission unit \(MTU\)<a name="mtu"></a>
 
-The maximum transmission unit \(MTU\) of a network connection is the size, in bytes, of the largest packet that can be passed over the connection\. The load balancer nodes for a Gateway Load Balancer support an MTU of 8,500 bytes\. You must ensure that the MTU settings for your appliances support packets that are 8,500 bytes in size\.
+The maximum transmission unit \(MTU\) is the size of the largest data packet that can be transmitted through the network\. The Gateway Load Balancer interface MTU supports packets up to 8,500 bytes\.
 
-Gateway Load Balancers encapsulate IP traffic with a GENEVE header and forward it to appliances over UDP port 6081\. The GENEVE encapsulation adds 64 bytes to the original header and doesn't count toward the overall MTU limit\. Therefore, to support packet sizes that are up to 8,500 bytes in size, without fragmentation, ensure that the MTU settings are between 8,564 and 9,001 bytes\.
+A Gateway Load Balancer encapsulates IP traffic with a GENEVE header and forwards it to the appliance\. The GENEVE encapsulation process adds 64 bytes to the original packet\. Therefore, to support packets up to 8,500 bytes, ensure that the MTU setting of your appliance supports packets of at least 8,564 bytes\.
+
+Gateway Load Balancers do not support IP fragmentation\.
 
 ## Deletion protection<a name="deletion-protection"></a>
 
@@ -101,3 +104,7 @@ By default, each load balancer node distributes traffic across the registered ta
 
 **To enable cross\-zone load balancing using the AWS CLI**  
 Use the [modify\-load\-balancer\-attributes](https://docs.aws.amazon.com/cli/latest/reference/elbv2/modify-load-balancer-attributes.html) command with the `load_balancing.cross_zone.enabled` attribute\.
+
+## Asymmetric flows<a name="asymmetric-flows"></a>
+
+Gateway Load Balancers support asymmetric flows when the load balancer processes the initial flow packet and the response flow packet is not routed through the load balancer\. Gateway Load Balancers do not support asymmetric flows when the load balancer does not process the initial flow packet but the response flow packet is routed through the load balancer\.
