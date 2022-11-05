@@ -10,6 +10,7 @@ You define health check settings for your Gateway Load Balancer on a per target 
 + [Registered targets](#registered-targets)
 + [Target group attributes](#target-group-attributes)
 + [Deregistration delay](#deregistration-delay)
++ [Target failover](#target-failover)
 + [Flow stickiness](#flow-stickiness)
 + [Create a target group](create-target-group.md)
 + [Configure health checks](health-checks.md)
@@ -55,7 +56,7 @@ If demand decreases, or you need to service your targets, you can deregister tar
 
 ## Target group attributes<a name="target-group-attributes"></a>
 
-The following are the target group attributes:
+You can use the following attributes with target groups:
 
 `deregistration_delay.timeout_seconds`  
 The amount of time for Elastic Load Balancing to wait before changing the state of a deregistering target from `draining` to `unused`\. The range is 0\-3600 seconds\. The default value is 300 seconds\.
@@ -67,6 +68,12 @@ Indicates whether configurable flow stickiness is enabled for the target group\.
 Indicates the type of the flow stickiness\. The possible values for target groups associated to Gateway Load Balancers are:   
 + `source_ip_dest_ip`
 + `source_ip_dest_ip_proto`
+
+`target_failover.on_deregistration`  
+Indicates how the Gateway Load Balancer handles existing flows when a target is deregistered\. The possible values are `rebalance` and `no_rebalance`\. The default is `no_rebalance`\. The two attributes \(`target_failover.on_deregistration` and `target_failover.on_unhealthy`\) can't be set independently\. The value you set for both attributes must be the same\. 
+
+`target_failover.on_unhealthy`  
+Indicates how the Gateway Load Balancer handles existing flows when a target is unhealthy\. The possible values are `rebalance` and `no_rebalance`\. The default is `no_rebalance`\. The two attributes \(`target_failover.on_deregistration` and `target_failover.on_unhealthy`\) cannot be set independently\. The value you set for both attributes must be the same\. 
 
 ## Deregistration delay<a name="deregistration-delay"></a>
 
@@ -98,6 +105,40 @@ To help drain existing flows, we recommend that you stop sending all traffic to 
 
 **To update the deregistration delay value using the AWS CLI**  
 Use the [modify\-target\-group\-attributes](https://docs.aws.amazon.com/cli/latest/reference/elbv2/modify-target-group-attributes.html) command\.
+
+## Target failover<a name="target-failover"></a>
+
+With target failover, you specify how the Gateway Load Balancer handles existing traffic flows after a target becomes unhealthy or when the target is deregistered\. By default, the Gateway Load Balancer continues to send existing flows to the same target, even if the target has failed or is deregistered\. You can manage these flows by either rehashing them \(`rebalance`\) or leaving them at the default state \(`no_rebalance`\)\. 
+
+**No rebalance**:  
+The Gateway Load Balancer continues to send existing flows to failed or drained targets\. However, new flows are sent to healthy targets\. This is the default behavior\.
+
+**Rebalance**:  
+The Gateway Load Balancer rehashes existing flows and sends them to healthy targets after the deregistration delay timeout\.   
+For deregistered targets, the minimum time to failover will depend on the deregistration delay\. The target is not marked as deregistered until deregistration delay is completed\.  
+For unhealthy targets, the minimum time to failover will depend on the target group health check configuration \(interval times threshold\)\. This is the minimum time before which a target is flagged as unhealthy\. After this time, the Gateway Load Balancer can take several minutes due to additional propagation time and TCP retransmission backoff before it reroutes new flows to healthy targets\. 
+
+**To update the target failover value using the new console**
+
+1. Open the Amazon EC2 console at [https://console\.aws\.amazon\.com/ec2/](https://console.aws.amazon.com/ec2/)\.
+
+1. On the navigation pane, under **LOAD BALANCING**, choose **Target Groups**\.
+
+1. Choose the name of the target group to open its details page\.
+
+1. On the **Group details** page, in the **Attributes** section, choose **Edit**\.
+
+1. On the **Edit attributes** page, change the value of **Target failover** as needed\.
+
+1. Choose **Save changes**\.
+
+**To update the target failover value using the AWS CLI**  
+Use the [modify\-target\-group\-attributes](https://docs.aws.amazon.com/cli/latest/reference/elbv2/modify-target-group-attributes.html) command, with the following key value pairs: 
++ Key=`target_failover.on_deregistration` and Value= `no_rebalance` \(default\) or `rebalance`
++ Key=`target_failover.on_unhealthy` and Value= `no_rebalance` \(default\) or `rebalance`
+
+**Note**  
+Both attributes \(`target_failover.on_deregistration` and `target_failover.on_unhealthy`\) must have the same value\. 
 
 ## Flow stickiness<a name="flow-stickiness"></a>
 

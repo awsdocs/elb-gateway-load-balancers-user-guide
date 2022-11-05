@@ -1,5 +1,11 @@
 # What is a Gateway Load Balancer?<a name="introduction"></a>
 
+Elastic Load Balancing automatically distributes your incoming traffic across multiple targets, in one or more Availability Zones\. It monitors the health of its registered targets, and routes traffic only to the healthy targets\. Elastic Load Balancing scales your load balancer as your incoming traffic changes over time\. It can automatically scale to the vast majority of workloads\.
+
+Elastic Load Balancing supports the following load balancers: Application Load Balancers, Network Load Balancers, Gateway Load Balancers, and Classic Load Balancers\. You can select the type of load balancer that best suits your needs\. This guide discusses Gateway Load Balancers\. For more information about the other load balancers, see the [User Guide for Application Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/application/), the [User Guide for Network Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/network/), and the [User Guide for Classic Load Balancers](https://docs.aws.amazon.com/elasticloadbalancing/latest/classic/)\.
+
+## Gateway Load Balancer overview<a name="gateway-load-balancer-overview"></a>
+
 Gateway Load Balancers enable you to deploy, scale, and manage virtual appliances, such as firewalls, intrusion detection and prevention systems, and deep packet inspection systems\. It combines a transparent network gateway \(that is, a single entry and exit point for all traffic\) and distributes traffic while scaling your virtual appliances with the demand\. 
 
 A Gateway Load Balancer operates at the third layer of the Open Systems Interconnection \(OSI\) model, the network layer\. It listens for all IP packets across all ports and forwards traffic to the target group that's specified in the listener rule\. It maintains stickiness of flows to a specific target appliance using 5\-tuple \(for TCP/UDP flows\) or 3\-tuple \(for non\-TCP/UDP flows\)\. The Gateway Load Balancer and its registered virtual appliance instances exchange application traffic using the [GENEVE](https://datatracker.ietf.org/doc/html/rfc8926) protocol on port 6081\.

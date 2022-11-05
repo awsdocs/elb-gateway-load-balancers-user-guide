@@ -28,3 +28,6 @@ The following quotas are for target groups\.
 | Targets per Availability Zone per GENEVE target group | 300 | No | 
 | Targets per Availability Zone per Gateway Load Balancer | 300 | No | 
 | Targets per Gateway Load Balancer | 300 | No | 
+
+**Bandwidth**  
+By default, each VPC endpoint can support a bandwidth of up to 10 Gbps per Availability Zone and automatically scales up to 100 Gbps\. If your application needs higher throughput, contact AWS support\.
