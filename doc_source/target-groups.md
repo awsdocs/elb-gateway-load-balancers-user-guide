@@ -146,7 +146,7 @@ By default, the Gateway Load Balancer maintains stickiness of flows to a specifi
 
 **Flow stickiness considerations**:
 + Flow stickiness is configured and applied at the target group level, and it applies to all traffic that goes to the target group\. 
-+ Flow stickiness won't work if the Gateway Load Balancer is integrated with Amazon VPC Transit Gateways, when appliance mode is enabled\.
++ Flow stickiness won't work if the Gateway Load Balancer is integrated with AWS Transit Gateways, when appliance mode is enabled\.
 + Flow stickiness can lead to uneven distribution of connections and flows, which may impact the availability of the target\. It is recommended that you terminate or drain all existing flows before modifying the stickiness type of the target group\.
 
 **To update flow stickiness using the console**
