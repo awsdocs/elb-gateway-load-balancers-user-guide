@@ -16,8 +16,8 @@ You configure active health checks for the targets in a target group by using th
 | **HealthCheckPath** |  \[HTTP/HTTPS health checks\] The ping path that is the destination on the targets for health checks\. The default is /\.  | 
 | **HealthCheckTimeoutSeconds** |  The amount of time, in seconds, during which no response from a target means a failed health check\. The range is 2 to 120\. The default is 5\.  | 
 | **HealthCheckIntervalSeconds** |  The approximate amount of time, in seconds, between health checks of an individual target\. The range is 5 to 300\. The default is 10 seconds\. This value must be greater than or equal to **HealthCheckTimeoutSeconds**\.  Health checks for Gateway Load Balancers are distributed and use a consensus mechanism to determine target health\. Therefore, you should expect target appliances to receive several health checks within the configured time interval\.   | 
-| **HealthyThresholdCount** |  The number of consecutive successful health checks required before considering an unhealthy target healthy\. The range is 2 to 10\. The default is 3\.  | 
-| **UnhealthyThresholdCount** |  The number of consecutive failed health checks required before considering a target unhealthy\. The range is 2 to 10\. The default is 3\.  | 
+| **HealthyThresholdCount** |  The number of consecutive successful health checks required before considering an unhealthy target healthy\. The range is 2 to 10\. The default is 5\.  | 
+| **UnhealthyThresholdCount** |  The number of consecutive failed health checks required before considering a target unhealthy\. The range is 2 to 10\. The default is 2\.  | 
 | **Matcher** |  \[HTTP/HTTPS health checks\] The HTTP codes to use when checking for a successful response from a target\. This value must be 200\-399\.  | 
 
 ## Target health status<a name="target-health-states"></a>

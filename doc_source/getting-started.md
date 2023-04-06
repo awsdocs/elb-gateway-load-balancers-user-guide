@@ -50,29 +50,35 @@ The numbered items that follow, highlight and explain elements shown in the prec
 
 ### Routing<a name="route-tables"></a>
 
-The route table for the internet gateway must have an entry that routes traffic destined for the application servers to the Gateway Load Balancer endpoint\. To specify the Gateway Load Balancer endpoint, use the ID of the VPC endpoint\.
+The route table for the internet gateway must have an entry that routes traffic destined for the application servers to the Gateway Load Balancer endpoint\. To specify the Gateway Load Balancer endpoint, use the ID of the VPC endpoint\. The following example shows the routes for a dualstack configuration\.
 
 
 | Destination | Target | 
 | --- | --- | 
-| 10\.0\.0\.0/16 | Local | 
-| 10\.0\.1\.0/24 | vpc\-endpoint\-id | 
+| VPC IPv4 CIDR | Local | 
+| VPC IPv6 CIDR | Local | 
+| Subnet 1 IPv4 CIDR | vpc\-endpoint\-id | 
+| Subnet 1 IPv6 CIDR | vpc\-endpoint\-id | 
 
-The route table for the subnet with the application servers must have an entry that routes all traffic \(0\.0\.0\.0/0\) from the application servers to the Gateway Load Balancer endpoint\.
+The route table for the subnet with the application servers must have entries that route all traffic from the application servers to the Gateway Load Balancer endpoint\.
 
 
 | Destination | Target | 
 | --- | --- | 
-| 10\.0\.0\.0/16 | Local | 
+| VPC IPv4 CIDR | Local | 
+| VPC IPv6 CIDR | Local | 
 | 0\.0\.0\.0/0 | vpc\-endpoint\-id | 
+| ::/0 | vpc\-endpoint\-id | 
 
-The route table for the subnet with the Gateway Load Balancer endpoint must route traffic that returns from inspection to its final destination\. For traffic that originated from the internet, the local route ensures that it reaches the application servers\. For traffic that originated from the application servers, add an entry that routes all traffic \(0\.0\.0\.0/0\) to the internet gateway\.
+The route table for the subnet with the Gateway Load Balancer endpoint must route traffic that returns from inspection to its final destination\. For traffic that originated from the internet, the local route ensures that it reaches the application servers\. For traffic that originated from the application servers, add entries that route all traffic to the internet gateway\.
 
 
 | Destination | Target | 
 | --- | --- | 
-| 10\.0\.0\.0/16 | Local | 
+| VPC IPv4 CIDR | Local | 
+| VPC IPv6 CIDR | Local | 
 | 0\.0\.0\.0/0 | internet\-gateway\-id | 
+| ::/0 | internet\-gateway\-id | 
 
 ## Prerequisites<a name="prerequisites"></a>
 + Ensure that the service consumer VPC has at least two subnets for each Availability Zone that contains application servers\. One subnet is for the Gateway Load Balancer endpoint, and the other is for the application servers\.
@@ -124,7 +130,7 @@ Use the following procedure to create your target group, register your security 
 
 1. For **Load balancer name**, enter a name for your load balancer\. For example, **my\-glb**\. 
 
-1. For **IP address type**, you must choose **IPv4**, because your clients can only use IPv4 addresses to communicate with the load balancer\.
+1. For **IP address type**, choose **IPv4** to support IPv4 addresses only or **Dualstack** to support both IPv4 and IPv6 addresses\.
 
 1. For **VPC**, select the service provider VPC\.
 
@@ -154,11 +160,16 @@ Use the following procedure to create an endpoint service using a Gateway Load B
 
    1. For **Require acceptance for endpoint**, select **Acceptance required** to accept connection requests to your service manually\. Otherwise, they are automatically accepted\.
 
+   1. For **Supported IP address types**, do one of the following:
+      + Select **IPv4** – Enable the endpoint service to accept IPv4 requests\.
+      + Select **IPv6** – Enable the endpoint service to accept IPv6 requests\.
+      + Select **IPv4** and **IPv6** – Enable the endpoint service to accept both IPv4 and IPv6 requests\.
+
    1. \(Optional\) To add a tag, choose **Add new tag** and enter the tag key and tag value\.
 
    1. Choose **Create**\. Note the service name; you'll need it when you create the endpoint\.
 
-1. Select the new endpoint service and choose **Actions**, **Allow principals**\. Enter the ARNs of the service consumers that are allowed to create an endpoint to your service\. A service consumer can be an IAM user, IAM role, or AWS account\. Choose **Allow principals**\.
+1. Select the new endpoint service and choose **Actions**, **Allow principals**\. Enter the ARNs of the service consumers that are allowed to create an endpoint to your service\. A service consumer can be a user, IAM role, or AWS account\. Choose **Allow principals**\.
 
 ## Step 3: Create a Gateway Load Balancer endpoint<a name="create-endpoint"></a>
 
@@ -179,6 +190,11 @@ Use the following procedure to create a Gateway Load Balancer endpoint\. Gateway
    1. For **VPC**, select the service consumer VPC\.
 
    1. For **Subnets**, select a subnet for the Gateway Load Balancer endpoint\.
+
+   1. For **IP address type**, choose from the following options:
+      + **IPv4** – Assign IPv4 addresses to your endpoint network interfaces\. This option is supported only if all selected subnets have IPv4 address ranges\.
+      + **IPv6** – Assign IPv6 addresses to your endpoint network interfaces\. This option is supported only if all selected subnets are IPv6 only subnets\.
+      + **Dualstack** – Assign both IPv4 and IPv6 addresses to your endpoint network interfaces\. This option is supported only if all selected subnets have both IPv4 and IPv6 address ranges\.
 
    1. \(Optional\) To add a tag, choose **Add new tag** and enter the tag key and tag value\.
 
@@ -208,7 +224,9 @@ Configure the route tables for the service consumer VPC as follows\. This allows
 
    1. Choose **Actions**, **Edit routes**\.
 
-   1. Choose **Add route**\. For **Destination**, enter the CIDR block of the subnet for the application servers \(for example, 10\.0\.1\.0/24\)\. For **Target**, select the VPC endpoint\.
+   1. Choose **Add route**\. For **Destination**, enter the IPv4 CIDR block of the subnet for the application servers\. For **Target**, select the VPC endpoint\.
+
+   1. If you support IPv6, choose **Add route**\. For **Destination**, enter the IPv6 CIDR block of the subnet for the application servers\. For **Target**, select the VPC endpoint\.
 
    1. Choose **Save changes**\.
 
@@ -218,6 +236,8 @@ Configure the route tables for the service consumer VPC as follows\. This allows
 
    1. Choose **Add route**\. For **Destination**, enter **0\.0\.0\.0/0**\. For **Target**, select the VPC endpoint\.
 
+   1. If you support IPv6, choose **Add route**\. For **Destination**, enter **::/0**\. For **Target**, select the VPC endpoint\.
+
    1. Choose **Save changes**\.
 
 1. Select the route table for the subnet with the Gateway Load Balancer endpoint, and do the following:
@@ -225,5 +245,7 @@ Configure the route tables for the service consumer VPC as follows\. This allows
    1. Choose **Actions**, **Edit routes**\.
 
    1. Choose **Add route**\. For **Destination**, enter **0\.0\.0\.0/0**\. For **Target**, select the internet gateway\.
+
+   1. If you support IPv6, choose **Add route**\. For **Destination**, enter **::/0**\. For **Target**, select the internet gateway\.
 
    1. Choose **Save changes**\.

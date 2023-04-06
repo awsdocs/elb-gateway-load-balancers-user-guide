@@ -49,7 +49,7 @@ You can register targets, such as EC2 instances, with a target group\. You'll us
 
 ## Step 2: Configure the load balancer and listener<a name="configure-load-balancer"></a>
 
-Use the following procedure to create your Gateway Load Balancer\. Provide basic configuration information for your load balancer, such as a name and IP address type \(currently only IPv4 is supported\)\. Then provide information about your network, and the IP listener that routes traffic to your target groups\. Only target groups with GENEVE are available for use with the Gateway Load Balancer\.
+Use the following procedure to create your Gateway Load Balancer\. Provide basic configuration information for your load balancer, such as a name and IP address type\. Then provide information about your network, and the IP listener that routes traffic to your target groups\. Only target groups with GENEVE are available for use with the Gateway Load Balancer\.
 
 **To create a Gateway Load Balancer**
 
@@ -65,7 +65,7 @@ Use the following procedure to create your Gateway Load Balancer\. Provide basic
 
    1. For **Load balancer name**, enter a name for your load balancer\. For example, **my\-glb**\. The name of your Gateway Load Balancer must be unique within your set of load balancers for the Region\. It can have a maximum of 32 characters, can contain only alphanumeric characters and hyphens, and must not begin or end with a hyphen\.
 
-   1. For **IP address type**, you must choose **IPv4**, because your clients can only use IPv4 addresses to communicate with the load balancer\.
+   1. For **IP address type**, choose **IPv4** to support IPv4 addresses only or **Dualstack** to support both IPv4 and IPv6 addresses\.
 
 1. **Network mapping**
 
@@ -75,7 +75,7 @@ Use the following procedure to create your Gateway Load Balancer\. Provide basic
 
 1. **IP listener routing**
 
-   1. For **Default action**, select a target group to forward traffic to\. If you don't have a default target group, create a target group first\. Only target groups with GENEVE protocol are available for use with the Gateway Load Balancer\.
+   1. For **Default action**, select a target group to forward traffic to\. If you don't have a target group, create one first\. The target group must use the GENEVE protocol\.
 
 1. \(Optional\) Expand **Tags** and add tags\.
 

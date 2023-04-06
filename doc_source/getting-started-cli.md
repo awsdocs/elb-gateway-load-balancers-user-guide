@@ -13,7 +13,7 @@ In this tutorial, we'll implement an inspection system using a Gateway Load Bala
 
 ## Overview<a name="overview-cli"></a>
 
-A Gateway Load Balancer endpoint is a VPC endpoint that provides private connectivity between virtual appliances in the service provider VPC, and application servers in the the service consumer VPC\. The Gateway Load Balancer is deployed in the same VPC as that of the virtual appliances\. These appliances are registered as a target group of the Gateway Load Balancer\.
+A Gateway Load Balancer endpoint is a VPC endpoint that provides private connectivity between virtual appliances in the service provider VPC, and application servers in the service consumer VPC\. The Gateway Load Balancer is deployed in the same VPC as that of the virtual appliances\. These appliances are registered as a target group of the Gateway Load Balancer\.
 
 The application servers run in one subnet \(destination subnet\) in the service consumer VPC, while the Gateway Load Balancer endpoint is in another subnet of the same VPC\. All traffic entering the service consumer VPC through the internet gateway is first routed to the Gateway Load Balancer endpoint for inspection and then routed to the destination subnet\.
 
@@ -49,29 +49,35 @@ The numbered items that follow, highlight and explain elements shown in the prec
 
 ### Routing<a name="route-tables"></a>
 
-The route table for the internet gateway must have an entry that routes traffic destined for the application servers to the Gateway Load Balancer endpoint\. To specify the Gateway Load Balancer endpoint, use the ID of the VPC endpoint\.
+The route table for the internet gateway must have an entry that routes traffic destined for the application servers to the Gateway Load Balancer endpoint\. To specify the Gateway Load Balancer endpoint, use the ID of the VPC endpoint\. The following example shows the routes for a dualstack configuration\.
 
 
 | Destination | Target | 
 | --- | --- | 
-| 10\.0\.0\.0/16 | Local | 
-| 10\.0\.1\.0/24 | vpc\-endpoint\-id | 
+| VPC IPv4 CIDR | Local | 
+| VPC IPv6 CIDR | Local | 
+| Subnet 1 IPv4 CIDR | vpc\-endpoint\-id | 
+| Subnet 1 IPv6 CIDR | vpc\-endpoint\-id | 
 
-The route table for the subnet with the application servers must have an entry that routes all traffic \(0\.0\.0\.0/0\) from the application servers to the Gateway Load Balancer endpoint\.
+The route table for the subnet with the application servers must have entries that route all traffic from the application servers to the Gateway Load Balancer endpoint\.
 
 
 | Destination | Target | 
 | --- | --- | 
-| 10\.0\.0\.0/16 | Local | 
+| VPC IPv4 CIDR | Local | 
+| VPC IPv6 CIDR | Local | 
 | 0\.0\.0\.0/0 | vpc\-endpoint\-id | 
+| ::/0 | vpc\-endpoint\-id | 
 
-The route table for the subnet with the Gateway Load Balancer endpoint must route traffic that returns from inspection to its final destination\. For traffic that originated from the internet, the local route ensures that it reaches the application servers\. For traffic that originated from the application servers, add an entry that routes all traffic \(0\.0\.0\.0/0\) to the internet gateway\.
+The route table for the subnet with the Gateway Load Balancer endpoint must route traffic that returns from inspection to its final destination\. For traffic that originated from the internet, the local route ensures that it reaches the application servers\. For traffic that originated from the application servers, add entries that route all traffic to the internet gateway\.
 
 
 | Destination | Target | 
 | --- | --- | 
-| 10\.0\.0\.0/16 | Local | 
+| VPC IPv4 CIDR | Local | 
+| VPC IPv6 CIDR | Local | 
 | 0\.0\.0\.0/0 | internet\-gateway\-id | 
+| ::/0 | internet\-gateway\-id | 
 
 ## Prerequisites<a name="prerequisites-aws-cli"></a>
 + Install the AWS CLI or update to the current version of the AWS CLI if you are using a version that does not support Gateway Load Balancers\. For more information, see [Installing the AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/installing.html) in the *AWS Command Line Interface User Guide*\.
@@ -90,6 +96,8 @@ Use the following procedure to create your load balancer, listener, and target g
    ```
    aws elbv2 create-load-balancer --name my-load-balancer --type gateway --subnets provider-subnet-id
    ```
+
+   The default is to support IPv4 addresses only\. To support both IPv4 and IPv6 addresses, add the `--ip-address-type dualstack` option\.
 
    The output includes the Amazon Resource Name \(ARN\) of the load balancer, with the format shown in the following example\.
 
@@ -145,9 +153,11 @@ Use the following procedure to create a Gateway Load Balancer endpoint\. Gateway
    aws ec2 create-vpc-endpoint-service-configuration --gateway-load-balancer-arns loadbalancer-arn --no-acceptance-required
    ```
 
+   To support both IPv4 and IPv6 addresses, add the `--supported-ip-address-types ipv4 ipv6` option\.
+
    The output contains the service ID \(for example, vpce\-svc\-12345678901234567\) and the service name \(for example, com\.amazonaws\.vpce\.us\-east\-2\.vpce\-svc\-12345678901234567\)\.
 
-1. Use the [modify\-vpc\-endpoint\-service\-permissions](https://docs.aws.amazon.com/cli/latest/reference/ec2/modify-vpc-endpoint-service-permissions.html) command to allow service consumers to create an endpoint to your service\. A service consumer can be an IAM user, IAM role, or AWS account\. The following example adds permission for the specified AWS account\.
+1. Use the [modify\-vpc\-endpoint\-service\-permissions](https://docs.aws.amazon.com/cli/latest/reference/ec2/modify-vpc-endpoint-service-permissions.html) command to allow service consumers to create an endpoint to your service\. A service consumer can be a user, IAM role, or AWS account\. The following example adds permission for the specified AWS account\.
 
    ```
    aws ec2 modify-vpc-endpoint-service-permissions --service-id vpce-svc-12345678901234567 --add-allowed-principals arn:aws:iam::123456789012:root
@@ -159,6 +169,8 @@ Use the following procedure to create a Gateway Load Balancer endpoint\. Gateway
    aws ec2 create-vpc-endpoint --vpc-endpoint-type GatewayLoadBalancer --service-name com.amazonaws.vpce.us-east-2.vpce-svc-12345678901234567 --vpc-id consumer-vpc-id --subnet-ids consumer-subnet-id
    ```
 
+   To support both IPv4 and IPv6 addresses, add the `--ip-address-type dualstack` option\.
+
    The output contains the ID of the Gateway Load Balancer endpoint \(for example, vpce\-01234567890abcdef\)\.
 
 ## Step 3: Configure routing<a name="configure-routing-aws-cli"></a>
@@ -167,10 +179,16 @@ Configure the route tables for the service consumer VPC as follows\. This allows
 
 **To configure routing**
 
-1. Use the [create\-route](https://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html) command to add an entry to the route table for the internet gateway that routes traffic that's destined for the application servers to the Gateway Load Balancer endpoint\.
+1. Use the [create\-route](https://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html) command to add entries to the route table for the internet gateway that routes traffic that's destined for the application servers to the Gateway Load Balancer endpoint\.
 
    ```
-   aws ec2 create-route --route-table-id gateway-rtb --destination-cidr-block 10.0.1.0/24 --vpc-endpoint-id vpce-01234567890abcdef
+   aws ec2 create-route --route-table-id gateway-rtb --destination-cidr-block Subnet 1 IPv4 CIDR --vpc-endpoint-id vpce-01234567890abcdef
+   ```
+
+   If you support IPv6, add the following route\.
+
+   ```
+   aws ec2 create-route --route-table-id gateway-rtb --destination-cidr-block Subnet 1 IPv6 CIDR --vpc-endpoint-id vpce-01234567890abcdef
    ```
 
 1. Use the [create\-route](https://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html) command to add an entry to the route table for the subnet with the application servers that routes all traffic from the application servers to the Gateway Load Balancer endpoint\.
@@ -179,10 +197,22 @@ Configure the route tables for the service consumer VPC as follows\. This allows
    aws ec2 create-route --route-table-id application-rtb --destination-cidr-block 0.0.0.0/0 --vpc-endpoint-id vpce-01234567890abcdef
    ```
 
+   If you support IPv6, add the following route\.
+
+   ```
+   aws ec2 create-route --route-table-id application-rtb --destination-cidr-block ::/0 --vpc-endpoint-id vpce-01234567890abcdef
+   ```
+
 1. Use the [create\-route](https://docs.aws.amazon.com/cli/latest/reference/ec2/create-route.html) command to add an entry to the route table for the subnet with the Gateway Load Balancer endpoint that routes all traffic that originated from the application servers to the internet gateway\.
 
    ```
    aws ec2 create-route --route-table-id endpoint-rtb --destination-cidr-block 0.0.0.0/0 --gateway-id igw-01234567890abcdef
+   ```
+
+   If you support IPv6, add the following route\.
+
+   ```
+   aws ec2 create-route --route-table-id endpoint-rtb --destination-cidr-block ::/0 --gateway-id igw-01234567890abcdef
    ```
 
 1. Repeat for each application subnet route table in each zone\.

@@ -144,10 +144,10 @@ Both attributes \(`target_failover.on_deregistration` and `target_failover.on_un
 
 By default, the Gateway Load Balancer maintains stickiness of flows to a specific target appliance using 5\-tuple \(for TCP/UDP flows\)\. 5\-tuple includes source IP, source port, destination IP, destination port, and transport protocol\. You can use the stickiness type attribute to modify the default \(5\-tuple\) and choose either 3\-tuple \(source IP, destination IP, and transport protocol\) or 2\-tuple \(source IP and destination IP\)\.
 
-**Flow stickiness considerations**:
-+ Flow stickiness is configured and applied at the target group level, and it applies to all traffic that goes to the target group\. 
+**Flow stickiness considerations**
++ Flow stickiness is configured and applied at the target group level, and it applies to all traffic that goes to the target group\.
 + Flow stickiness won't work if the Gateway Load Balancer is integrated with AWS Transit Gateway when appliance mode is enabled\.
-+ Flow stickiness can lead to uneven distribution of connections and flows, which may impact the availability of the target\. It is recommended that you terminate or drain all existing flows before modifying the stickiness type of the target group\.
++ Flow stickiness can lead to uneven distribution of connections and flows, which can impact the availability of the target\. It is recommended that you terminate or drain all existing flows before modifying the stickiness type of the target group\.
 
 **To update flow stickiness using the console**
 

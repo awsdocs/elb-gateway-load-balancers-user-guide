@@ -8,6 +8,7 @@ You can add or remove targets from your load balancer as your needs change, with
 
 **Topics**
 + [Load balancer state](#load-balancer-state)
++ [IP address type](#ip-address-type)
 + [Load balancer attributes](#load-balancer-attributes)
 + [Availability Zones](#availability-zones)
 + [Network maximum transmission unit \(MTU\)](#mtu)
@@ -31,6 +32,36 @@ The Gateway Load Balancer is fully set up and ready to route traffic\.
 `failed`  
 The Gateway Load Balancer could not be set up\.
 
+## IP address type<a name="ip-address-type"></a>
+
+You can set the types of IP addresses that the application servers can use to access your Gateway Load Balancers\. The following are the supported IP address types:
++ `ipv4` – Only IPv4 is supported\.
++ `dualstack` – Both IPv4 and IPv6 are supported\.
+
+**Dualstack load balancer considerations**
++ The virtual private cloud \(VPC\) and subnets that you specify for the load balancer must have associated IPv6 CIDR blocks\.
++ The route tables for the subnets in the service consumer VPC must route IPv6 traffic, and the network ACLs for these subnets must allow IPv6 traffic\.
++ A Gateway Load Balancer encapsulates both IPv4 and IPv6 client traffic with an IPv4 GENEVE header and sends it to the appliance\. The appliance encapsulates both IPv4 and IPv6 client traffic with an IPv4 GENEVE header and sends it back to the Gateway Load Balancer\.
+
+You can set the IP address type when you create the load balancer\. You can also update it at any time\.
+
+**To update the IP address type using the console**
+
+1. Open the Amazon EC2 console at [https://console\.aws\.amazon\.com/ec2/](https://console.aws.amazon.com/ec2/)\.
+
+1. On the navigation pane, under **LOAD BALANCING**, choose **Load Balancers**\.
+
+1. Select the load balancer\.
+
+1. Choose **Actions**, **Edit IP address type**\.
+
+1. For **IP address type**, choose **ipv4** to support IPv4 addresses only or **dualstack** to support both IPv4 and IPv6 addresses\.
+
+1. Choose **Save**\.
+
+**To update the IP address type using the AWS CLI**  
+Use the [set\-ip\-address\-type](https://docs.aws.amazon.com/cli/latest/reference/elbv2/set-ip-address-type.html) command\.
+
 ## Load balancer attributes<a name="load-balancer-attributes"></a>
 
 The following are the load balancer attributes for Gateway Load Balancers:
@@ -47,11 +78,11 @@ When you create a Gateway Load Balancer, you enable one or more Availability Zon
 
 ## Network maximum transmission unit \(MTU\)<a name="mtu"></a>
 
-The maximum transmission unit \(MTU\) is the size of the largest data packet that can be transmitted through the network\. The Gateway Load Balancer interface MTU supports packets up to 8,500 bytes\.
+The maximum transmission unit \(MTU\) is the size of the largest data packet that can be transmitted through the network\. The Gateway Load Balancer interface MTU supports packets up to 8,500 bytes\. Packets with a size larger than 8500 bytes that arrive at the Gateway Load Balancer interface are dropped\.
 
 A Gateway Load Balancer encapsulates IP traffic with a GENEVE header and forwards it to the appliance\. The GENEVE encapsulation process adds 64 bytes to the original packet\. Therefore, to support packets up to 8,500 bytes, ensure that the MTU setting of your appliance supports packets of at least 8,564 bytes\.
 
-Gateway Load Balancers do not support IP fragmentation\.
+Gateway Load Balancers do not support IP fragmentation\. Additionally, Gateway Load Balancers do not generate ICMP message "Destination Unreachable: fragmentation needed and DF set"\. Due to this, Path MTU Discovery \(PMTUD\) is not supported\.
 
 ## Deletion protection<a name="deletion-protection"></a>
 
